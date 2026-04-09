@@ -415,8 +415,8 @@
 
     const summary = document.createElement("div");
     summary.className = "cp-page-meta";
-    summary.textContent = info.hasUpdate ? strings.updateAvailable : strings.latestReady;
-    summary.dataset.tone = info.hasUpdate ? "ready" : "loading";
+    summary.textContent = strings.latestReady;
+    summary.dataset.tone = "loading";
     stack.appendChild(summary);
 
     const grid = document.createElement("div");

@@ -13,7 +13,6 @@
     normalizeVersion,
     compareVersions,
     computeHasUpdate,
-    isBlockedByMinVersion,
     createDefaultUpdateInfo,
     normalizeStoredInfo,
     normalizeLatestPayload,
@@ -32,11 +31,6 @@
   }
 
   function getVersionInfoPayload(info) {
-    if (info && info.minSupportedVersion) {
-      return {
-        min_supported_version: info.minSupportedVersion
-      };
-    }
     return {};
   }
 
@@ -98,7 +92,7 @@
     const updates = {};
     let needsPersist = false;
 
-    if (state.info.currentVersion !== nextInfo.currentVersion || state.info.hasUpdate !== nextInfo.hasUpdate || state.info.latestVersion !== nextInfo.latestVersion || state.info.minSupportedVersion !== nextInfo.minSupportedVersion) {
+    if (state.info.currentVersion !== nextInfo.currentVersion || state.info.hasUpdate !== nextInfo.hasUpdate || state.info.latestVersion !== nextInfo.latestVersion) {
       needsPersist = true;
     }
 
@@ -165,8 +159,7 @@
         reason: settings.reason || "unknown",
         currentVersion,
         latestVersion: persistedInfo.latestVersion,
-        hasUpdate: persistedInfo.hasUpdate,
-        minSupportedVersion: persistedInfo.minSupportedVersion
+        hasUpdate: persistedInfo.hasUpdate
       });
       return {
         ok: true,
@@ -334,13 +327,9 @@
         ...createDefaultUpdateInfo(currentVersion),
         ...info,
         currentVersion,
-        hasUpdate: computeHasUpdate(currentVersion, info.latestVersion),
-        minSupportedVersion: info.minSupportedVersion || null
+        hasUpdate: computeHasUpdate(currentVersion, info.latestVersion)
       };
       fixedInfo.hasUpdate = computeHasUpdate(fixedInfo.currentVersion, fixedInfo.latestVersion);
-      if (isBlockedByMinVersion(fixedInfo.currentVersion, fixedInfo.minSupportedVersion)) {
-        fixedInfo.hasUpdate = fixedInfo.hasUpdate || false;
-      }
       await persistInfo(fixedInfo);
       await syncInstalledVersion("bootstrap");
     } catch (error) {

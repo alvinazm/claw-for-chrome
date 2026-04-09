@@ -63,14 +63,6 @@
     }
     return compareVersions(current, latest) !== 0;
   }
-  function isBlockedByMinVersion(currentVersion, minSupportedVersion) {
-    const current = normalizeVersion(currentVersion);
-    const minVersion = normalizeVersion(minSupportedVersion);
-    if (!isValidVersion(current) || !isValidVersion(minVersion)) {
-      return false;
-    }
-    return compareVersions(current, minVersion) < 0;
-  }
   function getDefaultReleaseUrl(version) {
     const normalized = normalizeVersion(version);
     if (isValidVersion(normalized)) {
@@ -94,7 +86,7 @@
       downloadUrl: "",
       notes: "",
       publishedAt: "",
-      minSupportedVersion: null,
+      // minSupportedVersion: null,
       lastCheckedAt: "",
       source: SOURCE
     };
@@ -105,7 +97,6 @@
       return next;
     }
     const latestVersion = normalizeVersion(raw.latestVersion || raw.version);
-    const minSupportedVersion = isValidVersion(raw.minSupportedVersion || raw.min_supported_version) ? normalizeVersion(raw.minSupportedVersion || raw.min_supported_version) : null;
     next.currentVersion = normalizeVersion(currentVersion || raw.currentVersion);
     next.latestVersion = isValidVersion(latestVersion) ? latestVersion : "";
     next.hasUpdate = computeHasUpdate(next.currentVersion, next.latestVersion);
@@ -113,7 +104,6 @@
     next.downloadUrl = typeof raw.downloadUrl === "string" && raw.downloadUrl.trim() ? raw.downloadUrl.trim() : typeof raw.download_url === "string" && raw.download_url.trim() ? raw.download_url.trim() : getDefaultDownloadUrl(next.latestVersion);
     next.notes = typeof raw.notes === "string" ? raw.notes.trim() : "";
     next.publishedAt = typeof raw.publishedAt === "string" && raw.publishedAt.trim() ? raw.publishedAt.trim() : typeof raw.published_at === "string" && raw.published_at.trim() ? raw.published_at.trim() : "";
-    next.minSupportedVersion = minSupportedVersion;
     next.lastCheckedAt = typeof raw.lastCheckedAt === "string" && raw.lastCheckedAt.trim() ? raw.lastCheckedAt.trim() : typeof raw.last_checked_at === "string" && raw.last_checked_at.trim() ? raw.last_checked_at.trim() : "";
     next.source = typeof raw.source === "string" && raw.source.trim() ? raw.source.trim() : SOURCE;
     return next;
@@ -134,7 +124,6 @@
     next.downloadUrl = typeof raw.download_url === "string" && raw.download_url.trim() ? raw.download_url.trim() : getDefaultDownloadUrl(latestVersion);
     next.notes = typeof raw.notes === "string" ? raw.notes.trim() : "";
     next.publishedAt = typeof raw.published_at === "string" ? raw.published_at.trim() : "";
-    next.minSupportedVersion = isValidVersion(raw.min_supported_version) ? normalizeVersion(raw.min_supported_version) : null;
     next.lastCheckedAt = new Date().toISOString();
     next.source = SOURCE;
     return next;
@@ -227,7 +216,6 @@
     isValidVersion,
     compareVersions,
     computeHasUpdate,
-    isBlockedByMinVersion,
     createDefaultUpdateInfo,
     normalizeStoredInfo,
     normalizeLatestPayload,

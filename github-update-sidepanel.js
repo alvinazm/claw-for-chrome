@@ -11,7 +11,6 @@
     readStoredState,
     openReleasePage,
     openDownloadPage,
-    isBlockedByMinVersion,
     normalizeVersion
   } = shared;
 
@@ -30,11 +29,6 @@
     dismiss: "稍后提醒",
     skipVersion: "跳过此版本",
     close: "关闭",
-    blockedTitle: "需要手动升级扩展",
-    blockedBody: "当前版本 {current} 已不再受支持，请升级到 {min} 或更高版本后继续使用。",
-    blockedStep1: "下载最新 ZIP 包",
-    blockedStep2: "用新文件替换本地扩展目录",
-    blockedStep3: "打开 chrome://extensions 并点击“重新加载”",
     notesFallback: "当前发布没有附带详细更新说明。",
     unknown: "未知"
   } : {
@@ -51,11 +45,6 @@
     dismiss: "Later",
     skipVersion: "Skip this version",
     close: "Close",
-    blockedTitle: "Manual update required",
-    blockedBody: "Your current version ({current}) is no longer supported. Please update to {min} or later to keep using Claw.",
-    blockedStep1: "Download the latest ZIP",
-    blockedStep2: "Replace the local extension folder",
-    blockedStep3: "Open chrome://extensions and click Reload",
     notesFallback: "This release did not include detailed notes.",
     unknown: "Unknown"
   };
@@ -214,17 +203,7 @@
   }
 
   function shouldShowUpdateModal(info) {
-    const latestVersion = normalizeVersion(info?.latestVersion);
-    if (!info?.hasUpdate || !latestVersion) {
-      return false;
-    }
-    if (normalizeVersion(state?.dismissedVersion) === latestVersion) {
-      return false;
-    }
-    if (snoozedVersion === latestVersion) {
-      return false;
-    }
-    return true;
+    return false;
   }
 
   function appendHeader(card, title, badge, bodyText) {
@@ -312,10 +291,6 @@
       return;
     }
     const info = state.info;
-    if (isBlockedByMinVersion(info.currentVersion, info.minSupportedVersion)) {
-      createBlockedModal(info);
-      return;
-    }
     if (shouldShowUpdateModal(info)) {
       createUpdateModal(info);
     }
